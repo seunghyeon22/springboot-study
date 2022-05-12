@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class SigninReqDto {
 	@NotBlank
-	//@Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-z]).{5,20}",
-	//message = "아이디는 5~20자의 영문 소,대문자와 숫자만 사용하여 합니다.  ")
+	@Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-z]).{5,20}",
+	message = "아이디는 5~20자의 영문 소,대문자와 숫자만 사용하여 합니다.  ")
 	private String username;
 	@NotBlank
 	@Pattern(regexp = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W).{8,16}",

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.springboot.study.web.controller.api.data.User;
+import com.springboot.study.web.dto.AccountReqDto;
 import com.springboot.study.web.dto.CMRespDto;
 import com.springboot.study.web.dto.SigninReqDto;
 import com.springboot.study.web.dto.SignupReqDto;
@@ -111,26 +112,13 @@ public class UserController {
 	//@Valid, @NotBlank, BindingResult 사용 변수의 null값 확인
 	@PostMapping("/auth/signup")
 	public ResponseEntity<?> signup(@Valid SignupReqDto signupReqDto, BindingResult bindingResult){
-		
-		if(bindingResult.hasErrors()) {
-			Map<String, String> errorMap = new HashMap<String, String>();
-			for(FieldError error : bindingResult.getFieldErrors()) {
-				errorMap.put(error.getField(), error.getDefaultMessage());
-			}
-			return new ResponseEntity<>(new CMRespDto<Map<String, String>>(-1,"필드오류",errorMap),HttpStatus.BAD_REQUEST);
-		}	
+
 		return new ResponseEntity<>(new CMRespDto<SignupReqDto>(1, "회원가입 완료", signupReqDto),HttpStatus.OK);
 	}
 	
 	@PostMapping("/auth/signin")
-	public ResponseEntity<?>signin(@Valid SigninReqDto signinReqDto, BindingResult bindingResult){
-		if(bindingResult.hasErrors()) {
-			Map<String, String> errorMap = new HashMap<String, String>();
-			for(FieldError error : bindingResult.getFieldErrors()) {
-				errorMap.put(error.getField(), error.getDefaultMessage());
-			}
-			return new ResponseEntity<>(new CMRespDto<Map<String, String>>(-1,"오류", errorMap),HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<?> signin(@Valid SigninReqDto signinReqDto, BindingResult bindingResult){
+		
 		User user = new User();
 		if(signinReqDto.getUsername().equals(user.getUsername())
 				&&signinReqDto.getPassword().equals(user.getPassword())) {
@@ -138,7 +126,26 @@ public class UserController {
 		}else {
 			return new ResponseEntity<>(new CMRespDto<SigninReqDto>(-1,"로그인 실패", signinReqDto),HttpStatus.BAD_REQUEST);
 			
-		}
+		}		
+	}
+	@PutMapping("/account/{username}")	
+	public ResponseEntity<?> updateUser(@PathVariable String username, @Valid  AccountReqDto accountReqDto, BindingResult bindingResult){
 		
+		User user = new User();
+		if(!user.getUsername().equals(username)) {
+			return new ResponseEntity<>(new CMRespDto<String>(-1, "회원조회 실패", username),HttpStatus.BAD_REQUEST);
+		}
+		user.setEmail(accountReqDto.getEmail());
+		user.setName(accountReqDto.getName());
+		return new ResponseEntity<>(new CMRespDto<User>(1, "회원정보 수정", user),HttpStatus.OK);
+		
+	}
+	@DeleteMapping("/account/{username}")
+	public ResponseEntity<?> deleteUser(@PathVariable String username){
+		User user = new User();
+		if(!user.getUsername().equals(username)) {
+			return new ResponseEntity<>(new CMRespDto<User>(-1, "회원탈퇴 실패", user),HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(new CMRespDto<String>(1, "회원탈퇴 성공", username), HttpStatus.OK);
 	}
 }
