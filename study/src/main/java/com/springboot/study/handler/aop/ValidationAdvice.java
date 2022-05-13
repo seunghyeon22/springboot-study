@@ -35,6 +35,7 @@ public class ValidationAdvice {
 	
 	private final Logger LOGGER = LoggerFactory.getLogger(ValidationAdvice.class);
 	
+	//execution(=특정메소드들을 지정하고싶을때 사용)((=접근제어자, 생략가능)*(=리턴타입) com.springboot.study.web.controller.api(=경로).*Controller.*(=메소드)(매개변수))")
 	@Around("execution(* com.springboot.study.web.controller.api.*Controller.*(..))") 
 	public Object apiAdvice(ProceedingJoinPoint proceedingJoinPoint) throws Throwable { 
 		// Throwable : 최상위 throws, proceedingJoinPoint : around어노테이션의 클래스의 모든 매개변수를 가져온다
