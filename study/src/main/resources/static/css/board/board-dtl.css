@@ -8,40 +8,25 @@
 	margin: 0px auto;
 	width: 1000px;
 }
+
 .board-list{
 	display: flex;
 	justify-content : center;
 	align-items : center;
 	width: 100%;
 }
-.board-list-page{
-	
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	width: 100px;
-}
-.board-list-page div{
-	cursor: pointer;
-			
-}
 
 .board-list-table{
 	border: 1px solid black;
 	border-collapse: collapse;
-	
-}
-.board-items{
-	cursor: pointer;
 }
 
-.board-items{
-	background-color: #fafafa;
+th{
+	border: 1px solid black;
+	width: 100px;
 }
-
-
 
 td{
 	border: 1px solid black;
-	width: 200px;
+	width: 400px;
 }

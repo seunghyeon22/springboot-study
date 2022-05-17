@@ -1,9 +1,9 @@
+/**
+ * 
+ */
 const boardListTable = document.querySelector(".board-list-table");
 const boardListPage = document.querySelector(".board-list-page");
 const boardListButton =boardListPage.querySelectorAll('div');
-
-
-
 
 let nowPage =1;
 
@@ -21,7 +21,6 @@ function load(page){
 			console.log(data);
 			let boardList = JSON.parse(data);
 			getBoardList(boardList.data);
-			getBoardItems();
 		},
 		error : function(){
 			alert("비동기 처리 오류");
@@ -31,8 +30,18 @@ function load(page){
 }
 // 페이지의 데이터 가져오기
 function getBoardList(data){
-	const tableBody = boardListTable.querySelector('tbody');
-	let tableStr =``;
+	// append를 사용할 수 도 있기 때문에 반복문으로 사용
+	// innerHTML을 사용하면 필요하지 않은 반복문
+	while(boardListTable.hasChildNodes()){
+		boardListTable.removeChild(boardListTable.firstChild);	
+	}
+	let tableStr =`
+	<tr>
+		<th>번호</th>
+		<th>제목</th>
+		<th>작성자</th>
+		<th>조회수</th>
+	</tr>`;
 	for(let i=0;i<data.length;i++){
 		tableStr+=`
 		<tr class="board-items">
@@ -40,9 +49,9 @@ function getBoardList(data){
 			<td>${data[i].title}</td>
 			<td>${data[i].username}</td>
 			<td>${data[i].boardCount}</td>
-		</tr>	`
+		</tr>	`;
 	}
-	tableBody.innerHTML=tableStr;
+	boardListTable.innerHTML=tableStr;
 }
 for(let i=0; i<boardListButton.length;i++){
 	boardListButton[i].onclick=()=>{
@@ -50,16 +59,7 @@ for(let i=0; i<boardListButton.length;i++){
 		load(nowPage);
 	}
 }
-function getBoardItems(){
-	const boardItems = document.querySelectorAll(".board-items");
-	console.log(boardItems);
-	for (let i = 0; i < boardItems.length; i++) {
-		boardItems[i].onclick = () => {
-			location.href="/board/dtl/"+boardItems[i].querySelectorAll('td')[0].textContent;
-		}
-	}
-	
-}
+
 
 
 
