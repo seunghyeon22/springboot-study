@@ -40,6 +40,7 @@ public class BoardServiceImpl implements BoardService {
 	public List<BoardRespDto> getBoardListByPage(int page) throws Exception {
 		
 		List<BoardRespDto> boardRespDtos = new ArrayList<BoardRespDto>();
+		
 		List<Map<String, Object>> boardListAll = boardRespository.getBoardListByPage((page-1)*5);
 		for(Map<String, Object> boardMap : boardListAll) {
 			boardRespDtos.add(BoardRespDto.builder()
@@ -49,6 +50,7 @@ public class BoardServiceImpl implements BoardService {
 				.usercode((Integer) (boardMap.get("board_wirter")))
 				.username((String) (boardMap.get("board_username")))
 				.boardCount((Integer)(boardMap.get("board_count")))
+				.boardCountAll((Long)(boardMap.get("board_count_all")))
 				.build());
 		}
 		return boardRespDtos;
