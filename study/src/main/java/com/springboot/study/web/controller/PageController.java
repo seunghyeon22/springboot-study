@@ -10,16 +10,20 @@ public class PageController {
 	public String index() {
 		return "index";
 	}
-	@GetMapping("/board")
+	@GetMapping("/board/list")
 	public String boardList() {
 		return "board/board-list";
 	}
-	@GetMapping("/board/dtl/{boardCode}")
+	@GetMapping("/board-info/{boardCode}")
 	public String boardDtl(@PathVariable int boardCode) {
 		return "board/board-dtl";
 	}
-	@GetMapping("/board/create")
+	@GetMapping("/board")
 	public String boardInsert() {
 		return "board/board-insert";
+	}
+	@GetMapping("/board/{boardCode}")
+	public String boardUpdate(@PathVariable int boardCode) {
+		return "board/board-update";
 	}
 }

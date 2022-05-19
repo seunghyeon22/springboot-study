@@ -12,7 +12,7 @@ load(nowPage);
 function load(page){
 	
 	//fetch 사용 방법
-	let url = "/board/list?page="+page; //`/board/list?page=${page}`
+	let url = "/api/board/list?page="+page; //`/board/list?page=${page}`
 	
 	fetch(url) //기본 fetch형태
 	.then(response => {
@@ -54,11 +54,23 @@ function load(page){
 //페이지 수 
 function createPageNumber(data){
 	const boardListPage = document.querySelector(".board-list-page");
+	const preNextBtn = document.querySelectorAll(".pre-next-btn");
+	
 	const totalBoardCount = data;
 	const totalPageCount = data%5 ==0? data/5 : (data/5) +1;
 	
 	const startIndex = nowPage%5 ==0? nowPage-4:nowPage-(nowPage%5)+1; 
 	const endIndex = startIndex+4<=totalPageCount? startIndex+4 : totalPageCount;
+	
+	
+	preNextBtn[0].onclick =()=>{
+		nowPage =startIndex !=1 ?startIndex-1 : 1;
+		load(nowPage)
+		}
+	preNextBtn[1].onclick =()=>{
+		nowPage = endIndex !=totalPageCount ? endIndex+1 :totalPageCount;
+		load(nowPage)
+		}
 	
 	let pageStr = ``;
 	
@@ -66,7 +78,6 @@ function createPageNumber(data){
 		pageStr+=`<div>${i}</div>`
 	}
 	
-	pageStr +='<div>6</div>'
 	
 	boardListPage.innerHTML =pageStr;
 	
@@ -101,7 +112,7 @@ function getBoardItems(){
 	console.log(boardItems);
 	for (let i = 0; i < boardItems.length; i++) {
 		boardItems[i].onclick = () => {
-			location.href="/board/dtl/"+boardItems[i].querySelectorAll('td')[0].textContent;
+			location.href="/board-info/"+boardItems[i].querySelectorAll('td')[0].textContent;
 		}
 	}
 	

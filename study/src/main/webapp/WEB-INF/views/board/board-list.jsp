@@ -11,6 +11,7 @@
 <body>
 	<div id="container">
 		<div class="board-list">
+		
 			<table class="board-list-table">
 				<thead>
 					<tr>
@@ -21,11 +22,14 @@
 					</tr>
 				</thead>
 				<tbody>
-					
-					
+
+
 				</tbody>
 			</table>
 		</div>
+		<button onclick ="location.href ='/board">작성</button>
+		<div class ="board-page-buttons">
+		<div class = "pre-next-btn"><!-- &#60; -->&lt;</div>
 		<div class="board-list-page">
 			<div>1</div>
 			<div>2</div>
@@ -33,7 +37,9 @@
 			<div>4</div>
 			<div>5</div>
 		</div>
-
+		<div class ="pre-next-btn">&gt;</div>
+		</div>
+		
 	</div>
 	<script type="text/javascript" src="/js/board-list.js"></script>
 </body>
