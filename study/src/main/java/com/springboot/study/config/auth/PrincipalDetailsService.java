@@ -12,12 +12,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class PrincipalDetailsService implements UserDetailsService{//UserDetailsService는 시큐리티엣 있음
+public class PrincipalDetailsService implements UserDetailsService{//UserDetailsService는 시큐리티에 있음
 	private final UserRepository userRepository;
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		User userEntity = userRepository.findUserByUsername(username);
 		System.out.println("로그인 요청?");
+		
 		return new PrincipalDetails(userEntity);
 	}
 }

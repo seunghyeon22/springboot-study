@@ -8,9 +8,18 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
-@EnableWebSecurity
-@Configuration //컴포넌트 개념 
+import com.springboot.study.config.oauth2.PrincipalOauth2UserService;
+
+import lombok.RequiredArgsConstructor;
+
+@EnableWebSecurity //기존의 WebSecurityConfigurerAdapter의 설정을 비활성화 시키고 현재 클래스(SecurityConfig)의 설정을 따르겠다.
+@Configuration //컴포넌트 개념, @Bean을 사용할 수 있게 해준다. 
+@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {//WebSecurityConfigurerAdapter 모든 시큐리티의 메소드들이 들어있음
 	//UserDetailsService 로그인 관련 메소드
 	//configure 많이 사용되는 메소드
@@ -20,6 +29,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {//WebSecurityC
 	 * public BCryptPasswordEncoder bCryptPasswordEncoder() { return new
 	 * BCryptPasswordEncoder() }
 	 */
+	private final PrincipalOauth2UserService principalOauth2UserService;
 	
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {
@@ -29,8 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {//WebSecurityC
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-	http.csrf().disable();
-	http.authorizeRequests()
+	http.csrf().disable();// csrf()는 사용하지 않겠다. 
+	http.authorizeRequests()// 인증요청
 		.antMatchers("/api/board/**","/","/board/list")//이러한 요청이 들어오면
 		.authenticated() // 인증이 필요하다.
 		.antMatchers("/api/v1/user/**")
@@ -45,8 +55,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {//WebSecurityC
 		.formLogin()
 		.loginPage("/auth/signin") //로그인 페이지 get요청(view)
 		.loginProcessingUrl("/auth/signin") // 로그인 post요청(PrincipalDetailsService -> loadUserByUsername() 호출)
-		.defaultSuccessUrl("/"); //로그인이 되어졌으면 이쪽으로 가라
-		
+		.defaultSuccessUrl("/") //로그인이 되어졌으면 이쪽으로 가라
+		.and()
+		.oauth2Login()
+		.loginPage("/auth/signin")
+		.userInfoEndpoint()
+		.userService(principalOauth2UserService)
+		.and()
+		.defaultSuccessUrl("/");
 	}
 	
 }

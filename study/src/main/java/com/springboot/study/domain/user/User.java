@@ -17,12 +17,14 @@ public class User {
 	private String email;
 	private String name;
 	private String username;
+	private String oAuth2_username;
 	private String password;
 	private String roles; //ROlE_USER, ROLE_MANAGER, ROLE_ADMIN
+	private String provider;
 	
 	public List<String> getRoleList(){
 		if(this.roles.length()>0) {
-			return Arrays.asList(this.roles.split(","));//			
+			return Arrays.asList(this.roles.split(","));//Arrays.asList - 배열을 list로 바꿔준다, split- 문자열을 배열로 바꿔준다			
 		}
 		return new ArrayList<String>();
 	}
