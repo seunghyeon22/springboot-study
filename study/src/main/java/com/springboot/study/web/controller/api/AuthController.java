@@ -8,9 +8,12 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.springboot.study.config.auth.PrincipalDetails;
 import com.springboot.study.domain.user.User;
@@ -51,6 +54,12 @@ public class AuthController {
 		String password = principalDetails.getUser().getPassword();
 		System.out.println(bCryptPasswordEncoder.matches("1111", password)); //password 복호화해서 비교하여 같으면 true 아니면 false
 		return new ResponseEntity<>(new CMRespDto<PrincipalDetails>(1, "세션정보", principalDetails),HttpStatus.OK);
+	}
+	@PutMapping("/user/account/profile/img")
+	public ResponseEntity<?> updateProfileImg(@RequestPart MultipartFile file){
+		System.out.println(file);
+		file.getOriginalFilename();
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@GetMapping("/user")
