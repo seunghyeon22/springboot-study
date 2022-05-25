@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,21 +17,31 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.study.config.auth.PrincipalDetails;
+import com.springboot.study.service.user.AccountService;
 import com.springboot.study.web.controller.api.data.User;
 import com.springboot.study.web.dto.AccountReqDto;
 import com.springboot.study.web.dto.CMRespDto;
 import com.springboot.study.web.dto.SigninReqDto;
 import com.springboot.study.web.dto.SignupReqDto;
 
+import lombok.RequiredArgsConstructor;
+
 @RestController
+@RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 public class UserController {
 //
 //	@Autowired
 //	private User user;
+	private final AccountService accountService;
 
-	@GetMapping("/user/{usercode}")
+	@GetMapping("/{usercode}")
 	public ResponseEntity<?> getUser(@PathVariable int usercode) {
 
 		System.out.println(usercode);
@@ -49,8 +60,8 @@ public class UserController {
 	 * 
 	 * 5. 회원탈퇴(/account/aaa) -> 회원탈퇴 완료, 회원탈퇴 실패
 	 */
-	
-	//잘못된 코딩
+
+	// 잘못된 코딩
 //	@GetMapping("/auth/signup/check/{username}") //PathVariable 경로로 가져온다. 파라미터와 다르다
 //	public ResponseEntity<?> usernameCheck(@PathVariable String username) {
 //		if (user.getUsername() != username) {
@@ -94,58 +105,40 @@ public class UserController {
 //	public ResponseEntity<?> deleteUser(User user) {
 //		return null;
 //	}
-	@GetMapping("/auth/signup/check/{username}")
-	public ResponseEntity<?> checkUsername(@PathVariable String username) {
-		User user = new User();
-		CMRespDto<String> cmRespDto = null;
-		HttpStatus status = null;
-		if(user.getUsername().equals(username)) {
-			cmRespDto = new CMRespDto<String>(-1, "사용할 수 없는 사용자이름", username);
-			status = HttpStatus.BAD_REQUEST;
-		}else {
-			cmRespDto = new CMRespDto<String>(1, "사용할 수 있는 사용자이름", username);
-			status = HttpStatus.OK;
-		}
-		return new ResponseEntity<>(cmRespDto,status);
-	}
-	//mvn에서 Spring Boot Starter Validation 라이브러리 받아와야함 
-	//@Valid, @NotBlank, BindingResult 사용 변수의 null값 확인
-	@PostMapping("/auth/signup")
-	public ResponseEntity<?> signup(@Valid SignupReqDto signupReqDto, BindingResult bindingResult){
 
-		return new ResponseEntity<>(new CMRespDto<SignupReqDto>(1, "회원가입 완료", signupReqDto),HttpStatus.OK);
-	}
-	
-	@PostMapping("/auth/signin")
-	public ResponseEntity<?> signin(@Valid SigninReqDto signinReqDto, BindingResult bindingResult){
-		
+	@PutMapping("/account/{username}")
+	public ResponseEntity<?> updateUser(@PathVariable String username, @Valid AccountReqDto accountReqDto,
+			BindingResult bindingResult) {
+
 		User user = new User();
-		if(signinReqDto.getUsername().equals(user.getUsername())
-				&&signinReqDto.getPassword().equals(user.getPassword())) {
-			return new ResponseEntity<>(new CMRespDto<User>(1,"로그인 성공", user),HttpStatus.OK);
-		}else {
-			return new ResponseEntity<>(new CMRespDto<SigninReqDto>(-1,"로그인 실패", signinReqDto),HttpStatus.BAD_REQUEST);
-			
-		}		
-	}
-	@PutMapping("/account/{username}")	
-	public ResponseEntity<?> updateUser(@PathVariable String username, @Valid  AccountReqDto accountReqDto, BindingResult bindingResult){
-		
-		User user = new User();
-		if(!user.getUsername().equals(username)) {
-			return new ResponseEntity<>(new CMRespDto<String>(-1, "회원조회 실패", username),HttpStatus.BAD_REQUEST);
+		if (!user.getUsername().equals(username)) {
+			return new ResponseEntity<>(new CMRespDto<String>(-1, "회원조회 실패", username), HttpStatus.BAD_REQUEST);
 		}
 		user.setEmail(accountReqDto.getEmail());
 		user.setName(accountReqDto.getName());
-		return new ResponseEntity<>(new CMRespDto<User>(1, "회원정보 수정", user),HttpStatus.OK);
-		
+		return new ResponseEntity<>(new CMRespDto<User>(1, "회원정보 수정", user), HttpStatus.OK);
+
 	}
+
 	@DeleteMapping("/account/{username}")
-	public ResponseEntity<?> deleteUser(@PathVariable String username){
+	public ResponseEntity<?> deleteUser(@PathVariable String username) {
 		User user = new User();
-		if(!user.getUsername().equals(username)) {
-			return new ResponseEntity<>(new CMRespDto<User>(-1, "회원탈퇴 실패", user),HttpStatus.BAD_REQUEST);
+		if (!user.getUsername().equals(username)) {
+			return new ResponseEntity<>(new CMRespDto<User>(-1, "회원탈퇴 실패", user), HttpStatus.BAD_REQUEST);
 		}
 		return new ResponseEntity<>(new CMRespDto<String>(1, "회원탈퇴 성공", username), HttpStatus.OK);
+	}
+
+	@PutMapping("/account/profile/img")
+	public ResponseEntity<?> updateProfileImg(@RequestPart MultipartFile file, @AuthenticationPrincipal PrincipalDetails principalDetails) {// 파일 객체 가져오기
+		if (accountService.updateProfileImg(file, principalDetails)) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	@PutMapping("/account/profile")
+	public ResponseEntity<?> updateProfile(){
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

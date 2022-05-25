@@ -1,5 +1,7 @@
 package com.springboot.study.config.auth;
 
+import java.util.HashMap;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,6 +21,6 @@ public class PrincipalDetailsService implements UserDetailsService{//UserDetails
 		User userEntity = userRepository.findUserByUsername(username);
 		System.out.println("로그인 요청?");
 		
-		return new PrincipalDetails(userEntity);
+		return new PrincipalDetails(userEntity, new HashMap<String, Object>());
 	}
 }

@@ -23,6 +23,7 @@ public class User {
 	private String password;
 	private String roles; //ROlE_USER, ROLE_MANAGER, ROLE_ADMIN
 	private String provider;
+	private String profile_img_url;
 	
 	public List<String> getRoleList(){
 		if(this.roles.length()>0) {

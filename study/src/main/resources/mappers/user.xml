@@ -20,22 +20,37 @@
   now()
   );
   </insert>
+  
   	<select id="findUserByUsername" parameterType="String" resultType="com.springboot.study.domain.user.User">
   	select
-  		*
+  		um.*,
+  		ud.profile_img_url
   	from
-  		user_mst
+  		user_mst um
+  		left outer join user_dtl ud on(ud.usercode =um.usercode)
   	where
   		username = #{username};
   	</select>
+  	
   	<select id="findOAuth2UserByOAuth2Username" parameterType="String" resultType="com.springboot.study.domain.user.User">
-  	select
-  		*
+  		select
+  		um.*,
+  		ud.profile_img_url
   	from
-  		user_mst
+  		user_mst um
+  		left outer join user_dtl ud on(ud.usercode =um.usercode)
   	where
   		oAuth2_username = #{oAuth2_username};
   	</select>
+  	
+  	<update id="updateProfileImg" parameterType="com.springboot.study.domain.user.User">
+  	update
+  		user_dtl
+  	set
+  		profile_img_url =#{profile_img_url}
+  	where
+  	usercode =#{usercode}
+  	</update>
   	
   </mapper>
   
