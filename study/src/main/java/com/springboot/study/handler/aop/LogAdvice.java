@@ -6,10 +6,12 @@ import java.util.Map;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.CodeSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 
 @Aspect
@@ -18,20 +20,26 @@ public class LogAdvice {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LogAdvice.class);
 	
-	@Around("within(com.springboot.study..*)")
+	@Pointcut("within(com.springboot.study..*)")
+	private void pointcut() {}
+	
+	@Around("pointcut()")
 	//within(=해당패키지의안의 모든 클래스를 사용하고 싶을때 사용)(com.springboot.study..*)
 	public Object loggin(ProceedingJoinPoint pjp) throws Throwable{
-		long startAt = System.currentTimeMillis();
+		//long startAt = System.currentTimeMillis();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		
 		Map<String,Object> params = getParams(pjp);
 		
-		LOGGER.info("-------Advice Call :{}({})={}",pjp.getSignature().getDeclaringTypeName(),pjp.getSignature().getName(), params);
+		LOGGER.info("--Advice Call :{}({})={}",pjp.getSignature().getDeclaringTypeName(),pjp.getSignature().getName(), params);
 		
 		Object result =pjp.proceed();
 		
-		long endAt = System.currentTimeMillis();
+		//long endAt = System.currentTimeMillis();
+		stopWatch.stop();
 		
-		LOGGER.info("-------Advice End :{}({})={}({}ms)",pjp.getSignature().getDeclaringTypeName(),pjp.getSignature().getName(), result, endAt-startAt);
+		LOGGER.info("--Advice End :{}({})={}({}ms)",pjp.getSignature().getDeclaringTypeName(),pjp.getSignature().getName(), result, stopWatch.getTotalTimeMillis());
 		
 		return result;
 	}

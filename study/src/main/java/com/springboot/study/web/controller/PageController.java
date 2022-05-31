@@ -28,8 +28,6 @@ public class PageController {
 	public String myPage() {
 		return "account/mypage";
 	}
-	
-	
 	@GetMapping("/board/list")
 	public String boardList () {
 		

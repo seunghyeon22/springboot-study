@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.springboot.study.annotation.Validation;
 import com.springboot.study.config.auth.PrincipalDetails;
 import com.springboot.study.domain.user.User;
 import com.springboot.study.domain.user.UserRepository;
@@ -37,6 +38,7 @@ public class AuthController {
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 	
 	@PostMapping("/signup")
+	
 	public ResponseEntity<?> signup(@RequestBody User user) {
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		//password 암호화
@@ -92,6 +94,7 @@ public class AuthController {
 	//mvn에서 Spring Boot Starter Validation 라이브러리 받아와야함 
 	//@Valid, @NotBlank, BindingResult 사용 변수의 null값 확인
 	@PostMapping("/auth/signup")
+	@Validation
 	public ResponseEntity<?> signup(@Valid SignupReqDto signupReqDto, BindingResult bindingResult){
 
 		return new ResponseEntity<>(new CMRespDto<SignupReqDto>(1, "회원가입 완료", signupReqDto),HttpStatus.OK);

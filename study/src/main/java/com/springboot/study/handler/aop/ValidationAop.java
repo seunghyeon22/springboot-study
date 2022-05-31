@@ -3,9 +3,13 @@ package com.springboot.study.handler.aop;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -29,18 +33,25 @@ import com.springboot.study.handler.ex.CustomValidationApiException;
  * Mvn에서 Spring Boot Starter AOP 라이브러리를 등록해야 한다.
  * Mvn에서 SLF4J등록 해야 API Module Logger 사용가능
  */
-@Aspect
+@Aspect//@Before 실행되기 전 @After 실행된 후 @AfterReturning 리턴된 후(리턴이 있는 경우) Around 실행되기전과 후에 전부다 동시에 한번에 처리할 때
 @Component
-public class ValidationAdvice {
+public class ValidationAop {
 	
-	private final Logger LOGGER = LoggerFactory.getLogger(ValidationAdvice.class);
+	private final Logger LOGGER = LoggerFactory.getLogger(ValidationAop.class);
 	
 	//execution(=특정메소드들을 지정하고싶을때 사용)((=접근제어자, 생략가능)*(=리턴타입) com.springboot.study.web.controller.api(=경로).*Controller.*(=메소드)(매개변수))")
 	//@Around("execution(* com.springboot.study.web.controller.api.*Controller.*(..))") 
-	@Around("execution(* com.springboot.study.test.*Controller.*(..))") 
-	public Object apiAdvice(ProceedingJoinPoint proceedingJoinPoint) throws Throwable { 
+	
+	@Pointcut("within(com.springboot.study.web.controller..*)")
+	private void pointcut() {}
+	
+	@Pointcut("@annotation(com.springboot.study.annotation.Validation)")
+	private void enableValid() {}
+	
+	@Before("pointcut() && enableValid()")
+	public void apiAdvice(JoinPoint joinPoint) throws Throwable { 
 		// Throwable : 최상위 throws, proceedingJoinPoint : around어노테이션의 클래스의 모든 매개변수를 가져온다
-		Object[] args = proceedingJoinPoint.getArgs(); //오브젝트 형태로 업케스팅되어 매개변수들을 모두 args에 담는다.
+		Object[] args = joinPoint.getArgs(); //오브젝트 형태로 업케스팅되어 매개변수들을 모두 args에 담는다.
 		for(Object arg : args) {
 			if(arg instanceof BindingResult) {
 				BindingResult bindingResult = (BindingResult) arg; //업케스팅 된 상태여서 사용을 못하기 때문에 BindingResult형태로 다운캐스팅
@@ -54,7 +65,9 @@ public class ValidationAdvice {
 				}
 			}	
 		}
-
-		return proceedingJoinPoint.proceed(); //필터에서 chain과 같은 용도
+	}
+	@AfterReturning(value = "pointcut() && enableValid()", returning = "returnObj")
+	public void afterReturn(JoinPoint joinPoint, Object returnObj) {
+		LOGGER.info("유효성 검사 완료: {}", returnObj );
 	}
 }
